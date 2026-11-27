@@ -62,7 +62,12 @@ img{max-width:100%;display:block}
 .about-intro h2{margin-bottom:14px}
 .about-intro p{color:var(--mute)}
 .about-intro .about-mail{color:var(--ink);font-weight:600;margin-top:16px}
-.about-mail a{color:var(--blue);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.copy-mail{all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere;border-radius:4px}
+.copy-mail:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.about-mail .copy-mail{color:var(--blue)}
+.copy-tip{display:inline-block;margin-left:10px;font-size:13px;font-weight:700;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s}
+.copy-tip.show{opacity:1;transform:none}
+.about-mail .copy-tip{color:light-dark(#137a4b,#5fd3a0)}
 .about-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .about-card{padding:19px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
 .about-card:first-child{grid-column:1/-1}
@@ -133,7 +138,8 @@ dialog button{font:600 15px "Red Hat Text",sans-serif;background:#fff;color:#0b1
 footer{background:var(--navy);color:#aab4d8;font-size:14px}
 footer b{color:#fff}
 .foot-mail{color:#eef1fb;font-size:15px;font-weight:600}
-.foot-mail a{color:var(--sun);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.foot-mail .copy-mail{color:var(--sun)}
+.foot-mail .copy-tip{color:var(--teal)}
 @media(max-width:900px){.about{grid-template-columns:1fr}.about-intro{position:static;max-width:720px}.route{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:34px}.stn:nth-child(2){margin-right:0}.stn:nth-child(2)::after,.stn:nth-child(2)::before{display:none}.mine{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:720px){.nav{align-items:flex-start}.navlinks{gap:12px}.top,.sec-head,.story{grid-template-columns:minmax(0,1fr)}.figs{border-left:0;border-top:1px solid #303b64;padding:18px 0 0}.about-cards{grid-template-columns:1fr}.about-card:first-child{grid-column:auto}.gal{grid-template-columns:minmax(0,1fr)}.gal .wide img,.gal img{aspect-ratio:16/9}}
 @media(max-width:600px){.route{grid-template-columns:minmax(0,1fr);row-gap:30px}.stn{margin-right:0}.stn:not(:last-child)::after{right:auto;left:28px;top:auto;bottom:-27px;width:3px;height:24px}.stn:not(:last-child)::before{right:auto;left:23px;top:auto;bottom:-31px;border:6px solid transparent;border-top:8px solid var(--blue);border-bottom:0;transform:none}.stn:nth-child(2)::after,.stn:nth-child(2)::before{display:block}.db{grid-template-columns:minmax(0,1fr)}.grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}.cell{font-size:12px}}
@@ -196,7 +202,7 @@ footer b{color:#fff}
 
 <section class="band" id="about">
   <div class="wrap about">
-    <div class="about-intro"><div class="eyebrow">ABOUT ME</div><h2>我關注的不只是「接通」，還有出錯時怎麼收斂。</h2><p>在 Laravel 5.8 專案中，我長期負責外部遊戲平台串接與既有系統維護。這類工作需要同時理解廠商協定、內部帳務規則和後台操作流程。</p><p>遇到結果不明、資料延遲或補單邊界等問題時，我會先確認狀態如何流動，再讓每個操作都有可追蹤、可重試的處理方式。</p><p class="about-mail">Email：<a href="mailto:sasayeahya@gmail.com">sasayeahya@gmail.com</a></p></div>
+    <div class="about-intro"><div class="eyebrow">ABOUT ME</div><h2>我關注的不只是「接通」，還有出錯時怎麼收斂。</h2><p>在 Laravel 5.8 專案中，我長期負責外部遊戲平台串接與既有系統維護。這類工作需要同時理解廠商協定、內部帳務規則和後台操作流程。</p><p>遇到結果不明、資料延遲或補單邊界等問題時，我會先確認狀態如何流動，再讓每個操作都有可追蹤、可重試的處理方式。</p><p class="about-mail">Email：<button type="button" class="copy-mail" data-email="sasayeahya@gmail.com" aria-label="複製 Email：sasayeahya@gmail.com">sasayeahya@gmail.com</button><span class="copy-tip" aria-live="polite"></span></p></div>
     <div class="about-cards">
       <article class="about-card"><div class="num">01 / INTEGRATION</div><h3>把各家協定收斂成共同流程</h3><p>依廠商差異實作 Avatar、Platform 與 Task，涵蓋帳號、轉帳、查單、注單 mapping、排程撈單和後台呈現；支援轉帳錢包與單一錢包流程。</p></article>
       <article class="about-card"><div class="num">02 / RELIABILITY</div><h3>保護交易與資料一致性</h3><p>辨識「明確失敗」和「結果未明」，避免逾時或限流被誤判後執行錯誤退款；處理 callback 冪等、重查與注單補同步。</p></article>
@@ -319,7 +325,7 @@ $end = $end->min(now()->subSeconds(self::<span class="g">END_BUFFER_SEC</span>))
 </section>
 
 <footer class="band" id="contact">
-  <div class="wrap"><div class="eyebrow">CONTACT</div><b>Frank Chen</b><p>PHP／Laravel 後端工程師 · 3 年開發經驗</p><p class="foot-mail">Email：<a href="mailto:sasayeahya@gmail.com">sasayeahya@gmail.com</a></p><p>本案例為在職期間參與的專案，基於保密不公開原始碼；頁面中的程式碼與畫面皆為示意版本，名稱與資料均為虛構。</p></div>
+  <div class="wrap"><div class="eyebrow">CONTACT</div><b>Frank Chen</b><p>PHP／Laravel 後端工程師 · 3 年開發經驗</p><p class="foot-mail">Email：<button type="button" class="copy-mail" data-email="sasayeahya@gmail.com" aria-label="複製 Email：sasayeahya@gmail.com">sasayeahya@gmail.com</button><span class="copy-tip" aria-live="polite"></span></p><p>本案例為在職期間參與的專案，基於保密不公開原始碼；頁面中的程式碼與畫面皆為示意版本，名稱與資料均為虛構。</p></div>
 </footer>
 
 
@@ -350,6 +356,22 @@ const shots=[
  [m4,"注單查詢","跨平台注單統一查詢，可用「平台群組」一次勾選整組平台。"]
 ];
 document.getElementById("gal").innerHTML=shots.map(([h,t,d])=>`<figure>${h}<figcaption><b>${t}</b>${d}</figcaption></figure>`).join("");
+}
+</script>
+<script>
+{
+const copyText=t=>{
+  if(navigator.clipboard&&window.isSecureContext){return navigator.clipboard.writeText(t)}
+  return new Promise((ok,fail)=>{const a=document.createElement("textarea");a.value=t;a.setAttribute("readonly","");a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy")?ok():fail()}catch(e){fail(e)}a.remove()});
+};
+document.querySelectorAll(".copy-mail").forEach(btn=>{
+  const tip=btn.nextElementSibling;let timer;
+  btn.addEventListener("click",()=>{
+    copyText(btn.dataset.email).then(()=>{tip.textContent="複製成功！"}).catch(()=>{tip.textContent="複製失敗，請手動複製"}).finally(()=>{
+      tip.classList.add("show");clearTimeout(timer);timer=setTimeout(()=>tip.classList.remove("show"),2000);
+    });
+  });
+});
 }
 </script>
 </body>
