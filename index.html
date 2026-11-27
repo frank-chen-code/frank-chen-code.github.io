@@ -187,9 +187,6 @@ footer b{color:#fff}
         <div class="fig1"><b>Laravel 5.8</b><span>PHP 7.3 · MariaDB · Redis · Horizon</span></div>
       </div>
     </div>
-    <div class="grid" id="grid" aria-label="串接的平台，依廠商系列分組"></div>
-    <div class="legend" id="legend"></div>
-    <p class="note">每一格代表一個串接的平台，顏色依廠商系列分組；基於保密，不列出平台名稱。</p>
   </div>
 </header>
 
@@ -324,10 +321,6 @@ $end = $end->min(now()->subSeconds(self::<span class="g">END_BUFFER_SEC</span>))
 
 <script>
 {
-const groups=[["A 系列",22,"#4fc1c6"],["B 系列",8,"#f7e463"],["多子平台廠商",22,"#8f9cf2"],["其他廠商",49,"#c9d1ee"]];
-let k=0;
-document.getElementById("grid").innerHTML=groups.map(([n,c,col])=>Array.from({length:c},()=>`<div class="cell" style="background:${col};animation-delay:${(k++)*8}ms"></div>`).join("")).join("");
-document.getElementById("legend").innerHTML=groups.map(([n,c,col])=>`<span><i style="background:${col}"></i>${n} ${c}</span>`).join("")+`<span>合計 ${groups.reduce((a,g)=>a+g[1],0)}</span>`;
 
 const nav=["總覽","會員管理","報表","平台管理","交易查詢","權限"];
 const side=on=>`<div class="mk-side"><b>Demo Admin</b>${nav.map(x=>`<span${x===on?' class="on"':''}>${x}</span>`).join("")}</div>`;
