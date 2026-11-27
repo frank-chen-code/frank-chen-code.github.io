@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frank Chen｜PHP Laravel 後端工程師</title>
+<meta name="description" content="Frank Chen 的 Laravel 後端作品集：多遊戲平台整合、錢包交易、注單同步與後台報表。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;800&family=Red+Hat+Text:wght@400;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: a case study shown to interviewers, dense and exact
+   IDEA an integration status board: every vendor a lit cell, like a weather chart of connections
+   PICTURE the hero grid of ~100 vendor cells grouped by family, then a route diagram of the system
+   COLOUR navy #0b1433 field, scale #3b4fd8 / #4fc1c6 / #f7e463 / #e8452c, white or night body
+   TYPE Red Hat Display 800 + Red Hat Text, Noto Sans TC for Chinese
+   LAYOUT laptop: title and figures across the top, grid full width beneath; phone: stacked */
+:root{color-scheme:light dark;--navy:#0b1433;--bg:light-dark(#ffffff,#0e1630);--ink:light-dark(#111833,#e9ecf7);--mute:light-dark(#4a5375,#a9b1cf);--line:light-dark(#dfe3ef,#26304f);--panel:light-dark(#f3f5fb,#141d3b);--blue:#3b4fd8;--teal:#4fc1c6;--sun:#f7e463;--red:#e8452c;--code:light-dark(#0b1433,#0a1129)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 "Red Hat Text","Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Red Hat Display","Noto Sans TC",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,5vw,50px);line-height:1.08}
+h2{font-size:clamp(26px,3.4vw,36px)}
+h3{font-size:21px}
+p{margin:0 0 12px;max-width:68ch}
+img{max-width:100%;display:block}
+.band{padding-block:clamp(32px,5vw,72px);padding-inline:max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.hero{background:var(--navy);color:#eef1fb;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 auto auto;width:48vw;height:100%;background:radial-gradient(ellipse at 80% 20%,rgba(59,79,216,.26),transparent 66%);pointer-events:none}
+.hero .wrap{position:relative}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:clamp(42px,7vw,82px)}
+.brand{font-weight:800;color:#fff;font-size:16px;letter-spacing:.02em}
+.navlinks{display:flex;gap:22px;align-items:center;font-size:14px}
+.navlinks a{color:#c3cbe8;text-decoration:none}
+.navlinks a:hover{color:#fff}
+.eyebrow{color:var(--teal);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--sun)}
+.hero .lead{max-width:58ch}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 15px;border:1px solid #53608d;border-radius:7px;color:#eef1fb;text-decoration:none;font-size:14px;font-weight:700}
+.btn.primary{background:var(--sun);border-color:var(--sun);color:#0b1433}
+.btn:hover{transform:translateY(-1px)}
+.hero .lead{color:#c3cbe8;font-size:17px;margin-top:14px}
+.top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:end}
+.figs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px;border-left:1px solid #303b64;padding-left:clamp(18px,3vw,34px)}
+.fig1 b{display:block;font:800 clamp(30px,4vw,44px)/1 "Red Hat Display",sans-serif;color:#fff;white-space:nowrap}
+.fig1 span{color:#aab4d8;font-size:14px}
+.fig1:first-child b{color:var(--sun)}
+.fig1:nth-child(2) b{color:var(--teal)}
+.grid{margin-top:clamp(28px,4vw,44px);display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:5px}
+.cell{border-radius:4px;padding:7px 4px;font:600 12.5px/1.1 "Red Hat Text",sans-serif;text-align:center;color:#0b1433;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;color:#aab4d8;font-size:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.note{color:#8f9ac2;font-size:13px;margin-top:10px}
+.about{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.5fr);gap:clamp(24px,5vw,70px);align-items:start}
+.about-intro{position:sticky;top:24px}
+.about-intro .eyebrow{color:var(--blue)}
+.about-intro h2{margin-bottom:14px}
+.about-intro p{color:var(--mute)}
+.about-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.about-card{padding:19px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.about-card:first-child{grid-column:1/-1}
+.about-card .num{font:800 13px "Red Hat Display",sans-serif;color:var(--blue);margin-bottom:10px}
+.about-card h3{font-size:17px;margin-bottom:6px}
+.about-card p{font-size:14px;color:var(--mute);margin:0}
+.section-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:800;margin-bottom:8px}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:clamp(20px,4vw,56px);align-items:end;margin-bottom:28px}
+.sec-head p{color:var(--mute);margin:0}
+.route{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;align-items:stretch}
+.stn{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;margin-right:34px}
+.stn:last-child{margin-right:0}
+.stn:not(:last-child)::after{content:"";position:absolute;right:-30px;top:50%;width:26px;height:3px;background:var(--blue)}
+.stn:not(:last-child)::before{content:"";position:absolute;right:-31px;top:calc(50% - 5px);border:6px solid transparent;border-left:8px solid var(--blue);border-right:0;transform:translateX(1px)}
+.stn h3{font-size:18px;margin-bottom:4px}
+.stn .k{display:inline-block;font-size:13px;font-weight:600;padding:1px 8px;border-radius:99px;margin-bottom:10px;color:#0b1433}
+.stn ul{margin:0;padding-left:18px;color:var(--mute);font-size:14.5px;line-height:1.6}
+.stn.me{border:2px solid var(--blue)}
+.db{margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.db div{border:1px dashed var(--line);border-radius:10px;padding:12px 16px;font-size:14.5px;color:var(--mute)}
+.db b{color:var(--ink)}
+.mine{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.mine div{border-top:3px solid var(--blue);padding-top:12px}
+.mine div:nth-child(2){border-color:var(--teal)}
+.mine div:nth-child(3){border-color:var(--red)}
+.mine h3{font-size:18px;margin-bottom:6px}
+.mine p{color:var(--mute);font-size:15px}
+.mine div{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--blue);border-radius:9px;padding:17px}
+.story{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4vw,52px);padding-block:clamp(28px,4vw,48px);border-top:1px solid var(--line)}
+.story:first-of-type{border-top:0;padding-top:0}
+.story h3{font-size:clamp(22px,2.6vw,28px);margin-bottom:14px}
+.story dl{margin:0}
+.story dt{font-weight:700;font-size:15px;margin-top:14px;color:var(--blue)}
+.story dd{margin:4px 0 0}
+:root[data-theme=dark] .story dt{color:var(--teal)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .story dt{color:var(--teal)}}
+.vis{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.panel h4{margin:0 0 10px;font-size:14px;color:var(--mute);font-weight:600}
+.out{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;align-items:center;font-size:14.5px}
+.tag{font:700 12.5px/1 "Red Hat Text",sans-serif;padding:6px 9px;border-radius:5px;color:#0b1433;white-space:nowrap;text-align:center}
+.t-ok{background:var(--teal)}.t-fail{background:var(--red);color:#fff}.t-wait{background:var(--sun)}
+.bad{opacity:.85}
+.bad s{color:var(--red)}
+pre{margin:0;background:var(--code);color:#dfe5fb;border-radius:10px;padding:14px 16px;font:13.5px/1.6 ui-monospace,"SF Mono",Menlo,Consolas,monospace;overflow-x:auto}
+pre .c{color:#8f9ac2}pre .y{color:var(--sun)}pre .g{color:var(--teal)}
+.tl{position:relative;height:56px;border-radius:8px;overflow:hidden;display:flex;font-size:13px;font-weight:600}
+.tl div{display:flex;align-items:center;justify-content:center;color:#0b1433;white-space:nowrap;padding:0 6px}
+.tl-ax{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-top:6px}
+.shots{background:var(--navy);color:#eef1fb}
+.shots .sec-head p{color:#aab4d8}
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.gal figure{margin:0}
+.gal button{all:unset;cursor:zoom-in;display:block;border-radius:8px;overflow:hidden;border:1px solid #26304f;background:#fff}
+.gal button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.gal img{width:100%;aspect-ratio:16/8.2;object-fit:cover;object-position:top left}
+.gal figcaption{margin-top:10px;font-size:15px;color:#c3cbe8}
+.gal figcaption b{color:#fff;display:block;font-size:16px}
+.gal .wide{grid-column:1/-1}
+.gal .wide img{aspect-ratio:16/6}
+dialog{border:0;padding:0;max-width:min(1400px,96vw);background:transparent}
+dialog::backdrop{background:rgba(5,9,25,.86)}
+dialog img{max-height:86vh;width:auto;border-radius:6px}
+dialog form{text-align:right;margin-bottom:8px}
+dialog button{font:600 15px "Red Hat Text",sans-serif;background:#fff;color:#0b1433;border:0;border-radius:6px;padding:10px 16px;min-height:44px;cursor:pointer}
+.stack{display:flex;flex-wrap:wrap;gap:8px}
+.stack span{border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:14.5px;background:var(--panel)}
+footer{background:var(--navy);color:#aab4d8;font-size:14px}
+footer b{color:#fff}
+@media(max-width:900px){.about{grid-template-columns:1fr}.about-intro{position:static;max-width:720px}.route{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:34px}.stn:nth-child(2){margin-right:0}.stn:nth-child(2)::after,.stn:nth-child(2)::before{display:none}.mine{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:720px){.nav{align-items:flex-start}.navlinks{gap:12px}.top,.sec-head,.story{grid-template-columns:minmax(0,1fr)}.figs{border-left:0;border-top:1px solid #303b64;padding:18px 0 0}.about-cards{grid-template-columns:1fr}.about-card:first-child{grid-column:auto}.gal{grid-template-columns:minmax(0,1fr)}.gal .wide img,.gal img{aspect-ratio:16/9}}
+@media(max-width:600px){.route{grid-template-columns:minmax(0,1fr);row-gap:30px}.stn{margin-right:0}.stn:not(:last-child)::after{right:auto;left:28px;top:auto;bottom:-27px;width:3px;height:24px}.stn:not(:last-child)::before{right:auto;left:23px;top:auto;bottom:-31px;border:6px solid transparent;border-top:8px solid var(--blue);border-bottom:0;transform:none}.stn:nth-child(2)::after,.stn:nth-child(2)::before{display:block}.db{grid-template-columns:minmax(0,1fr)}.grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}.cell{font-size:12px}}
+@media(prefers-reduced-motion:no-preference){.cell{animation:lit .5s ease-out both}@keyframes lit{from{opacity:0;transform:scale(.85)}}}
+
+.cell:empty{height:24px;padding:0}
+.mk{background:#fff;color:#1d2433;border-radius:10px;overflow:hidden;border:1px solid #26304f;font:13px/1.5 "Red Hat Text","Noto Sans TC",sans-serif}
+.mk-bar{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#e9edf5}
+.mk-bar i{width:9px;height:9px;border-radius:50%;background:#c5ccdb}
+.mk-bar span{margin-left:8px;color:#5b6478;font-size:12px}
+.mk-body{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:270px}
+.mk-side{background:#1f2a44;color:#c9d1e6;padding:12px 12px;font-size:12.5px;line-height:2.1}
+.mk-side b{color:#fff;display:block;margin-bottom:4px;font-size:13px}
+.mk-side span{display:block}
+.mk-side .on{color:#fff;background:#3b4fd8;border-radius:4px;padding:0 6px;margin:0 -6px}
+.mk-main{padding:14px 16px;overflow-x:auto}
+.mk-main h5{margin:0 0 10px;font-size:15px;font-weight:700}
+.mk table{width:100%;border-collapse:collapse;font-size:12.5px}
+.mk th{text-align:left;font-weight:600;color:#5b6478;border-bottom:1px solid #e3e7ef;padding:6px;white-space:nowrap}
+.mk td{border-bottom:1px solid #eef1f6;padding:6px;white-space:nowrap}
+.mk td.n{text-align:right;font-variant-numeric:tabular-nums}
+.mk .neg{color:#c0392b}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:600}
+.p-ok{background:#d5f2ee;color:#0d6b63}.p-off{background:#eceff5;color:#5b6478}.p-wait{background:#fdf3c4;color:#7a5b00}.p-fail{background:#fde0da;color:#a3271a}
+.mk-btn{display:inline-block;border:1px solid #c9d0e0;border-radius:5px;padding:0 7px;margin-right:4px;font-size:11.5px;color:#3b4fd8}
+.mk-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.mk-filters span{border:1px solid #d6dbe6;border-radius:6px;padding:2px 8px;color:#3a4357;font-size:12px}
+.mk-form{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin-top:12px;font-size:12.5px}
+.mk-form span:nth-child(odd){color:#5b6478}
+.mk-form em{font-style:normal;border:1px solid #d6dbe6;border-radius:5px;padding:2px 8px;display:inline-block}
+.mk-form s{color:#a3271a}
+.mk-note{margin-top:10px;padding:7px 10px;background:#fdf3c4;border-radius:6px;color:#5e4700;font-size:12.5px;white-space:normal}
+@media(max-width:600px){.mk-side{display:none}.mk-body{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+
+<header class="band hero">
+  <div class="wrap">
+    <nav class="nav" aria-label="主要導覽">
+      <a class="brand" href="#top">FRANK CHEN</a>
+      <div class="navlinks"><a href="#about">關於我</a><a href="#work">專案案例</a><a href="#contact">聯絡</a></div>
+    </nav>
+    <div class="top" id="top">
+      <div>
+        <div class="eyebrow">PHP · LARAVEL · BACKEND</div>
+        <h1>把複雜的外部串接，<em>做成穩定的系統。</em></h1>
+        <p class="lead">我是 Frank，具 3 年 PHP／Laravel 開發經驗。主要投入多平台 API 整合、錢包交易流程、注單同步與後台功能，習慣從例外情況和資料一致性出發，讓系統在外部服務不穩定時仍能安全處理。</p>
+        <div class="hero-actions"><a class="btn primary" href="#work">查看專案案例 ↓</a><a class="btn" href="#about">認識我的工作方式</a></div>
+      </div>
+      <div class="figs">
+        <div class="fig1"><b>3 年</b><span>PHP／Laravel 開發經驗</span></div>
+        <div class="fig1"><b>≈100</b><span>串接過的遊戲平台（含子平台）</span></div>
+        <div class="fig1"><b>交易一致性</b><span>轉帳、查單與 callback 流程</span></div>
+        <div class="fig1"><b>Laravel 5.8</b><span>PHP 7.3 · MariaDB · Redis · Horizon</span></div>
+      </div>
+    </div>
+    <div class="grid" id="grid" aria-label="串接的平台，依廠商系列分組"></div>
+    <div class="legend" id="legend"></div>
+    <p class="note">每一格代表一個串接的平台，顏色依廠商系列分組；基於保密，不列出平台名稱。</p>
+  </div>
+</header>
+
+<section class="band" id="about">
+  <div class="wrap about">
+    <div class="about-intro"><div class="eyebrow">ABOUT ME</div><h2>我關注的不只是「接通」，還有出錯時怎麼收斂。</h2><p>在 Laravel 5.8 專案中，我長期負責外部遊戲平台串接與既有系統維護。這類工作需要同時理解廠商協定、內部帳務規則和後台操作流程。</p><p>遇到結果不明、資料延遲或補單邊界等問題時，我會先確認狀態如何流動，再讓每個操作都有可追蹤、可重試的處理方式。</p></div>
+    <div class="about-cards">
+      <article class="about-card"><div class="num">01 / INTEGRATION</div><h3>把各家協定收斂成共同流程</h3><p>依廠商差異實作 Avatar、Platform 與 Task，涵蓋帳號、轉帳、查單、注單 mapping、排程撈單和後台呈現；支援轉帳錢包與單一錢包流程。</p></article>
+      <article class="about-card"><div class="num">02 / RELIABILITY</div><h3>保護交易與資料一致性</h3><p>辨識「明確失敗」和「結果未明」，避免逾時或限流被誤判後執行錯誤退款；處理 callback 冪等、重查與注單補同步。</p></article>
+      <article class="about-card"><div class="num">03 / DELIVERY</div><h3>兼顧後台使用情境</h3><p>參與代理管理、報表、平台群組、遊戲狀態批次更新等功能，讓營運能直接完成日常查詢與維護。</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="section-label">SYSTEM OVERVIEW</div><h2>系統怎麼運作</h2></div>
+      <p>代理在後台操作，請求進到聚合 API，再由每個平台各自的轉接層去跟遊戲商溝通。注單由排程定時拉回，統一寫進報表用的資料表。</p>
+    </div>
+    <div class="route">
+      <div class="stn"><span class="k" style="background:var(--sun)">使用者</span><h3>代理商與營運</h3><ul><li>三層代理架構：總代理、代理、會員</li><li>管理額度、查報表、設定權限</li></ul></div>
+      <div class="stn"><span class="k" style="background:var(--teal)">Laravel</span><h3>代理後台</h3><ul><li>會員與代理管理</li><li>注單、輸贏、日統計報表</li><li>權限、平台、RTP 設定</li><li>五語系語言包</li></ul></div>
+      <div class="stn me"><span class="k" style="background:var(--blue);color:#fff">Laravel · 主要負責</span><h3>聚合 API</h3><ul><li>Avatar：每家廠商的 HTTP 轉接層</li><li>Platform：注單欄位對應與格式化</li><li>Task：排程撈單與時間區間補單</li><li>Horizon queue 寫入注單</li></ul></div>
+      <div class="stn"><span class="k" style="background:var(--red);color:#fff">外部</span><h3>遊戲商 ×≈100</h3><ul><li>電子、真人、捕魚、彩票、體育</li><li>每家的簽章、限流、時間規則都不同</li></ul></div>
+    </div>
+    <div class="db">
+      <div><b>兩種錢包模式。</b>轉帳錢包由我方主動轉入轉出，出錯靠查單補救；單一錢包由廠商 callback 我方，靠冪等處理避免重複扣款。</div>
+      <div><b>資料層。</b>MariaDB 存注單與帳務，報表讀彙總表與 view；Redis 做設定快取、排程鎖與 queue。</div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="section-label">MY CONTRIBUTION</div><h2>我負責的部分</h2></div><p>以下依照兩個專案的程式結構與功能整理，說明我參與的範圍；平台數量是團隊系統規模，不代表每個項目皆由我獨立完成。</p></div>
+    <div class="mine">
+      <div><h3>遊戲平台串接</h3><p>從讀廠商文件開始：寫 Avatar（建帳號、轉入轉出、查單、撈注單）、注單 mapping、Task 排程、migration，再到後台的語言包與報表明細。轉帳錢包和單一錢包兩種模式都做過。</p></div>
+      <div><h3>串接後的維運修正</h3><p>處理廠商限流、時間窗限制、簽章編碼、延後派彩的額度取回、分頁 token 遺失這類上線後才會遇到的問題，並依 code review 回饋修正。</p></div>
+      <div><h3>後台功能</h3><p>報表的「平台群組設定」：讓同一個帳號底下的成員共用、共同編輯平台分組，查注單和輸贏報表時一次勾選整組平台。另外做了遊戲狀態的批量更新。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head" id="work"><div><div class="section-label">CASE STUDIES</div><h2>我處理過的工程問題</h2></div><p>串接的難處多半不在把 API 接通，而在廠商的例外情況發生時，金流和資料還是對的。</p></div>
+
+    <article class="story">
+      <div>
+        <h3>「結果未明」不等於「失敗」：避免限流造成的重複入帳</h3>
+        <dl>
+          <dt>情境</dt><dd>轉帳錢包把點數轉入遊戲商時，如果請求逾時，系統會呼叫查單 API 確認結果。查單回「失敗」，就把點數退還給會員。</dd>
+          <dt>問題</dt><dd>某平台的查單 API 和撈注單共用同一組請求次數限制。超過時廠商回傳限流錯誤碼，回應裡沒有資料欄位。原本的判斷是「沒有資料就是查無此單」，限流回應被當成失敗，系統就退點；但廠商其實已經入帳，<b>會員在兩邊都有錢</b>。</dd>
+          <dt>解法</dt><dd>只有在「API 回應成功，而且明確查無這筆單」時才判失敗；限流、逾時、格式異常一律標記為處理中，等下一輪重查。同時把狀態碼改成字串嚴格比對，因為 PHP 7 的鬆散比較會讓 <code>'abc' == 0</code> 成立，非數字的錯誤碼可能被誤判成成功。</dd>
+          <dt>學到的事</dt><dd>處理金流時，「確定失敗」和「不知道」要分開。不知道的時候寧可晚一點，也不要做出不可逆的退款。</dd>
+        </dl>
+      </div>
+      <div class="vis">
+        <div class="panel">
+          <h4>查單回應會被判成什麼</h4>
+          <div class="out">
+            <span class="tag t-ok">成功</span><span>API 成功，且查到這筆單</span>
+            <span class="tag t-fail">失敗 → 退點</span><span>API 成功，且明確查無此單</span>
+            <span class="tag t-wait">處理中</span><span>限流、逾時、格式異常，稍後重查</span>
+          </div>
+        </div>
+        <div class="panel bad"><h4>修正前</h4><div class="out"><span class="tag t-fail">失敗 → 退點</span><span><s>限流錯誤（沒有資料欄位）</s>，被當成查無此單</span></div></div>
+        <pre><span class="c">// 示意版本，非原始碼</span>
+<span class="y">if</span> ($ok && isset($res->data) && count($res->data) === 1) {
+    <span class="y">return</span> <span class="g">SUCCESS</span>;
+}
+<span class="y">if</span> ($ok && isset($res->data) && empty($res->data)) {
+    <span class="y">return</span> <span class="g">FAIL</span>;       <span class="c">// 確定查無此單</span>
+}
+<span class="y">return</span> <span class="g">PROCESSING</span>;    <span class="c">// 結果未明，下一輪重查</span></pre>
+      </div>
+    </article>
+
+    <article class="story">
+      <div>
+        <h3>撈注單時間窗的護欄：排程和手動補單都要守規則</h3>
+        <dl>
+          <dt>情境</dt><dd>注單同步靠排程，依時間區間向遊戲商拉單。營運人員也可以在後台手動選一段時間補單。</dd>
+          <dt>問題</dt><dd>某平台規定查詢的結束時間必須早於現在 2 分鐘，太接近現在會直接回錯誤。排程有扣掉 120 秒，但剛好卡在邊界，網路延遲或伺服器時鐘差一點就會失敗；手動補單路徑則完全沒有這層限制，只要選到現在時間就會出錯。另一個平台也有類似規則（5 秒）。</dd>
+          <dt>解法</dt><dd>把緩衝抽成一個常數，140 秒 = 120 秒硬限制 + 20 秒網路與時鐘誤差。排程和手動補單都把結束時間往前修正到「現在 − 140 秒」，整段落在禁區就直接略過，不送出請求。</dd>
+          <dt>學到的事</dt><dd>外部 API 的限制要守在每一條呼叫路徑上，不能只顧排程。邊界值也要留緩衝，不要剛好壓線。</dd>
+        </dl>
+      </div>
+      <div class="vis">
+        <div class="panel">
+          <h4>結束時間能落在哪裡</h4>
+          <div class="tl">
+            <div style="flex:5;background:var(--teal)">可查詢</div>
+            <div style="flex:1;background:var(--sun)">緩衝 20s</div>
+            <div style="flex:3.2;background:var(--red);color:#fff">廠商禁區 120s</div>
+          </div>
+          <div class="tl-ax"><span>過去</span><span>現在 − 140s</span><span>現在</span></div>
+        </div>
+        <pre><span class="c">// 示意版本，非原始碼</span>
+<span class="y">const</span> <span class="g">END_BUFFER_SEC</span> = 140; <span class="c">// 120 硬限制 + 20 緩衝</span>
+
+$end = $end->min(now()->subSeconds(self::<span class="g">END_BUFFER_SEC</span>));
+<span class="y">if</span> ($start->gte($end)) {
+    <span class="y">return</span>; <span class="c">// 整段落在禁區，不送請求</span>
+}</pre>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="band shots">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="section-label">PRODUCT UI</div><h2>功能示意畫面</h2></div><p>依實際功能重新繪製的示意畫面，版型、廠商名稱、帳號與數據皆為虛構，不代表原系統外觀。</p></div>
+    <div class="gal" id="gal"></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="section-label">TECH STACK</div><h2>使用技術</h2></div><p>專案受部署環境限制，維持在 PHP 7.3 語法。</p></div>
+    <div class="stack">
+      <span>PHP 7.3</span><span>Laravel 5.8</span><span>MariaDB</span><span>Redis</span><span>Laravel Horizon</span><span>Guzzle</span><span>jQuery</span><span>Blade</span><span>Docker · Laradock</span><span>Git · Code Review</span>
+    </div>
+  </div>
+</section>
+
+<footer class="band" id="contact">
+  <div class="wrap"><div class="eyebrow">CONTACT</div><b>Frank Chen</b><p>PHP／Laravel 後端工程師 · 3 年開發經驗</p><p>本案例為在職期間參與的專案，基於保密不公開原始碼；頁面中的程式碼與畫面皆為示意版本，名稱與資料均為虛構。</p></div>
+</footer>
+
+
+<script>
+{
+const groups=[["A 系列",22,"#4fc1c6"],["B 系列",8,"#f7e463"],["多子平台廠商",22,"#8f9cf2"],["其他廠商",49,"#c9d1ee"]];
+let k=0;
+document.getElementById("grid").innerHTML=groups.map(([n,c,col])=>Array.from({length:c},()=>`<div class="cell" style="background:${col};animation-delay:${(k++)*8}ms"></div>`).join("")).join("");
+document.getElementById("legend").innerHTML=groups.map(([n,c,col])=>`<span><i style="background:${col}"></i>${n} ${c}</span>`).join("")+`<span>合計 ${groups.reduce((a,g)=>a+g[1],0)}</span>`;
+
+const nav=["總覽","會員管理","報表","平台管理","交易查詢","權限"];
+const side=on=>`<div class="mk-side"><b>Demo Admin</b>${nav.map(x=>`<span${x===on?' class="on"':''}>${x}</span>`).join("")}</div>`;
+const win=(url,on,body)=>`<div class="mk"><div class="mk-bar"><i></i><i></i><i></i><span>${url}</span></div><div class="mk-body">${side(on)}<div class="mk-main">${body}</div></div></div>`;
+const pill=(t,c)=>`<span class="pill ${c}">${t}</span>`;
+const table=(head,rows,num=[])=>`<table><thead><tr>${head.map((h,i)=>`<th${num.includes(i)?' style="text-align:right"':''}>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td${num.includes(i)?' class="n"':''}>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+
+const plat=[["Vendor A","電子","TWD · VND",1,1],["Vendor B","真人","TWD",1,1],["Vendor C","彩票","CNY",1,0],["Vendor D","體育","TWD · USD",0,0],["Vendor E","捕魚","CNY",1,1]];
+const m1=win("demo-admin.example/platforms","平台管理",`<h5>平台管理</h5>`+table(["平台","類型","幣別","狀態","撈單","操作"],plat.map(([n,t,c,s,j])=>[n,t,c,s?pill("啟用","p-ok"):pill("停用","p-off"),j?pill("執行中","p-ok"):pill("暫停","p-off"),'<span class="mk-btn">遊戲</span><span class="mk-btn">任務</span><span class="mk-btn">語系</span>'])));
+
+const tx=[["T-240115-0091","demo_m07","轉入",pill("成功","p-ok"),"500.00","—"],["T-240115-0092","demo_m12","轉入",pill("處理中","p-wait"),"300.00","限流，重查 2/5"],["T-240115-0093","demo_m03","轉出",pill("成功","p-ok"),"120.50","—"],["T-240115-0094","demo_m21","轉入",pill("失敗","p-fail"),"80.00","查無此單，已退點"],["T-240115-0095","demo_m07","轉出",pill("成功","p-ok"),"640.00","—"]];
+const m2=win("demo-admin.example/transfers","交易查詢",`<h5>交易訂單查詢</h5><div class="mk-filters"><span>2024-01-15</span><span>全部平台</span><span>狀態：全部</span></div>`+table(["交易單號","會員","類型","狀態","金額","處理紀錄"],tx,[4]));
+
+const m3=win("demo-admin.example/platforms/vendor-a/task","平台管理",`<h5>撈單任務 · Vendor A</h5>`+table(["幣別","排程","每次區間"],[["TWD",pill("啟用","p-ok"),"90 秒"],["VND",pill("停用","p-off"),"90 秒"]])+`<div class="mk-form"><span>補單開始</span><span><em>2024-01-15 10:00:00</em></span><span>補單結束</span><span><s>10:30:00</s> → <em>10:27:40</em></span></div><div class="mk-note">結束時間太接近現在，已自動修正為「現在 − 140 秒」，避免觸發廠商的時間限制。</div>`);
+
+const bets=[["B-0001831","demo_m07","Vendor A","示範遊戲 3","50.00",'<span class="neg">-50.00</span>'],["B-0001832","demo_m12","Vendor B","示範牌桌 1","200.00","180.00"],["B-0001833","demo_m03","Vendor E","示範漁場","30.00",'<span class="neg">-12.40</span>'],["B-0001834","demo_m21","Vendor A","示範遊戲 8","100.00","0.00"]];
+const m4=win("demo-admin.example/report/bets","報表",`<h5>注單查詢</h5><div class="mk-filters"><span>平台群組：電子 + 真人</span><span>2024-01-01 ~ 01-31</span><span>幣別：TWD</span></div>`+table(["注單號","會員","平台","遊戲","投注","輸贏"],bets,[4,5]));
+
+const shots=[
+ [m1,"平台管理","每個串接的平台都有狀態、撈單排程、遊戲與語系的管理入口。"],
+ [m2,"交易訂單查詢","轉帳結果未明時標記為「處理中」並排程重查，只有確認查無此單才退點（對應案例一）。"],
+ [m3,"撈單任務與手動補單","手動補單的結束時間會自動避開廠商禁區（對應案例二）。"],
+ [m4,"注單查詢","跨平台注單統一查詢，可用「平台群組」一次勾選整組平台。"]
+];
+document.getElementById("gal").innerHTML=shots.map(([h,t,d])=>`<figure>${h}<figcaption><b>${t}</b>${d}</figcaption></figure>`).join("");
+}
+</script>
+</body>
+</html>
